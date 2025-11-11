@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  backend:
+    build: ./backend
+    container_name: asmglobal-backend
+    networks:
+      - asmglobal-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.asmbackend.rule=Host(`api.asmglobal.cloud`)"
+      - "traefik.http.routers.asmbackend.entrypoints=websecure"
+      - "traefik.http.routers.asmbackend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.asmbackend.loadbalancer.server.port=3000"
+
+  frontend:
+    build: ./frontend
+    container_name: asmglobal-frontend
+    networks:
+      - asmglobal-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.asmfrontend.rule=Host(`asmglobal.cloud`) || Host(`www.asmglobal.cloud`)"
+      - "traefik.http.routers.asmfrontend.entrypoints=websecure"
+      - "traefik.http.routers.asmfrontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.asmfrontend.loadbalancer.server.port=80"
+
+networks:
+  asmglobal-network:
+    external: true

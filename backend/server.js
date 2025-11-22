@@ -1,0 +1,7 @@
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => res.send('ASMglobal Backend is running!'));
+
+const port = process.env.PORT || 3020;
+app.listen(port, () => console.log(`Backend running on port ${port}`));

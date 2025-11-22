@@ -1,0 +1,3 @@
+"id","firstName","lastName","phone","gender","email","address","maritalStatus","occupation","isBaptized","isWorker","joinedDate","createdAt"
+"0ce00d82-8152-4d80-9687-ae92f6f34d19","John","Doe","+233550000003","male","john@example.com","Accra","single",,false,false,"2025-11-13","2025-11-13T16:50:45.875Z"
+"20daf86a-7c38-45c2-a1ff-e9943145441a","Samuel","Mensah","+233557301095","male","moonford4@gmail.com","Kumasi","married",,false,false,"2025-11-13","2025-11-13T17:53:03.293Z"

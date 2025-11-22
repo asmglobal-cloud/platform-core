@@ -1,0 +1,74 @@
+// utils/whatsapp.js
+const axios = require("axios");
+
+const INFOBIP_BASE_URL = process.env.INFOBIP_BASE_URL;
+const INFOBIP_API_KEY = process.env.INFOBIP_API_KEY;
+const WHATSAPP_SENDER = "233557301095"; // Dedicated Sender
+
+// ===== Send WhatsApp TEXT ONLY =====
+async function sendWhatsAppText(to, message) {
+  const url = `${INFOBIP_BASE_URL}/whatsapp/1/message/text`;
+
+  const payload = {
+    from: WHATSAPP_SENDER,
+    to: to,
+    content: {
+      text: message
+    }
+  };
+
+  return axios.post(url, payload, {
+    headers: {
+      Authorization: `App ${INFOBIP_API_KEY}`,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+// ===== Send WhatsApp IMAGE ONLY =====
+async function sendWhatsAppImage(to, imageUrl, caption = "") {
+  const url = `${INFOBIP_BASE_URL}/whatsapp/1/message/image`;
+
+  const payload = {
+    from: WHATSAPP_SENDER,
+    to,
+    content: {
+      url: imageUrl,
+      caption: caption
+    }
+  };
+
+  return axios.post(url, payload, {
+    headers: {
+      Authorization: `App ${INFOBIP_API_KEY}`,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+// ===== Send WhatsApp TEXT + IMAGE =====
+async function sendWhatsAppTextImage(to, message, imageUrl) {
+  const url = `${INFOBIP_BASE_URL}/whatsapp/1/message/image`;
+
+  const payload = {
+    from: WHATSAPP_SENDER,
+    to: to,
+    content: {
+      mediaUrl: imageUrl,
+      caption: message
+    }
+  };
+
+  return axios.post(url, payload, {
+    headers: {
+      Authorization: `App ${INFOBIP_API_KEY}`,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+module.exports = {
+  sendWhatsAppText,
+  sendWhatsAppImage,
+  sendWhatsAppTextImage
+};

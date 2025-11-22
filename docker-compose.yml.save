@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  # existing platform backend
+  backend:
+    build: ./backend
+    container_name: asmglobal-backend
+    ports:
+      - "3020:3020"
+    networks:
+      - asmglobal-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.asmbackend.rule=Host(`api.asmglobal.cloud`)"
+      - "traefik.http.routers.asmbackend.entrypoints=websecure"
+      - "traefik.http.routers.asmbackend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.asmbackend.loadbalancer.server.port=3020"
+
+  # existing platform frontend
+  frontend:
+    build: ./frontend
+    container_name: asmglobal-frontend
+    networks:
+      - asmglobal-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.asmfrontend.rule=Host(`asmglobal.cloud`) || Host(`www.asmglobal.cloud`)"
+      - "traefik.http.routers.asmfrontend.entrypoints=websecure"
+      - "traefik.http.routers.asmfrontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.asmfrontend.loadbalancer.server.port=80"
+
+  # >>> SpiritLynk Frontend
+  spiritlynk-frontend:
+    build: ./services/spiritlynk-frontend
+    container_name: spiritlynk-frontend
+    networks:
+      - asmglobal-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spiritlynkfrontend.rule=Host(`hub.spiritlynk.asmglobal.cloud`)"
+      - "traefik.http.routers.spiritlynkfrontend.entrypoints=websecure"
+      - "traefik.http.routers.spiritlynkfrontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.spiritlynkfrontend.loadbalancer.server.port=80"
+
+  # >>> SpiritLynk backend service (new)
+  spiritlynk-backend:
+    build: ./services/spiritlynk-backend
+    container_name: spiritlynk-backend
+    ports:
+      - "3050:3050"
+    environment:
+      - DB_HOST=spiritlynk-db
+      - DB_NAME=spiritlynk
+      - DB_USER=postgres
+      - DB_PASS=supersecret
+      - INFOBIP_API_KEY=ae7bf6fa830d90cf0d76817f05bbf044-0d8ea0ce-2595-48e6-83fd-02b5a78c0b7d
+      - INFOBIP_BASE_URL=https://qd55k2.api.infobip.com
+      - INFOBIP_SENDER=ASMGLB
+      - INFOBIP_EMAIL_API_KEY=
+      - INFOBIP_EMAIL_BASE_URL=https://your-infobip-base-url
+      - INFOBIP_EMAIL_FROM=no-reply@yourdomain.com
+
+    networks:
+      - asmglobal-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spiritlynk.rule=Host(`spiritlynk.asmglobal.cloud`)"
+      - "traefik.http.routers.spiritlynk.entrypoints=websecure"
+      - "traefik.http.routers.spiritlynk.tls.certresolver=letsencrypt"
+      - "traefik.http.services.spiritlynk.loadbalancer.server.port=3050"
+
+  # >>> SpiritLynk PostgreSQL database
+  spiritlynk-db:
+    image: postgres:16
+    container_name: spiritlynk-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: spiritlynk
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecret
+    volumes:
+      - spiritlynk-data:/var/lib/postgresql/data
+    networks:
+      - asmglobal-network
+
+volumes:
+  spiritlynk-data:
+
+networks:
+  asmglobal-network:
+    external: true

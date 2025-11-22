@@ -1,22 +1,33 @@
 version: "3.9"
+
 services:
+  # ======================================================
+  # ASMGLOBAL PLATFORM BACKEND
+  # ======================================================
   backend:
     build: ./backend
     container_name: asmglobal-backend
+    ports:
+      - "3020:3020"
     networks:
       - asmglobal-network
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.asmbackend.rule=Host(`api.asmglobal.cloud`)"
       - "traefik.http.routers.asmbackend.entrypoints=websecure"
       - "traefik.http.routers.asmbackend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.asmbackend.loadbalancer.server.port=3000"
+      - "traefik.http.services.asmbackend.loadbalancer.server.port=3020"
 
+  # ======================================================
+  # ASMGLOBAL FRONTEND
+  # ======================================================
   frontend:
     build: ./frontend
     container_name: asmglobal-frontend
     networks:
       - asmglobal-network
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.asmfrontend.rule=Host(`asmglobal.cloud`) || Host(`www.asmglobal.cloud`)"
@@ -24,6 +35,87 @@ services:
       - "traefik.http.routers.asmfrontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.asmfrontend.loadbalancer.server.port=80"
 
+  # ======================================================
+  # SPIRITLYNK FRONTEND
+  # ======================================================
+  spiritlynk-frontend:
+    build: ./services/spiritlynk-frontend
+    container_name: spiritlynk-frontend
+    networks:
+      - asmglobal-network
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spiritlynkfrontend.rule=Host(`hub.spiritlynk.asmglobal.cloud`) && PathPrefix(`/`)"
+      - "traefik.http.routers.spiritlynkfrontend.entrypoints=websecure"
+      - "traefik.http.routers.spiritlynkfrontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.spiritlynkfrontend.loadbalancer.server.port=80"
+
+  # ======================================================
+  # SPIRITLYNK BACKEND
+  # ======================================================
+  spiritlynk-backend:
+    build: ./services/spiritlynk-backend
+    container_name: spiritlynk-backend
+    ports:
+      - "3050:3050"
+
+    environment:
+      - DB_HOST=spiritlynk-db
+      - DB_NAME=spiritlynk
+      - DB_USER=postgres
+      - DB_PASS=supersecret
+
+      # INFOBIP WHATSAPP + SMS API
+      - INFOBIP_API_KEY=ae7bf6fa830d90cf0d76817f05bbf044-0d8ea0ce-2595-48e6-83fd-02b5a78c0b7d
+      - INFOBIP_BASE_URL=https://qd55k2.api.infobip.com
+      - INFOBIP_SENDER=ASMGLB
+
+      # INFOBIP EMAIL API
+      - INFOBIP_EMAIL_API_KEY=ae7bf6fa830d90cf0d76817f05bbf044-0d8ea0ce-2595-48e6-83fd-02b5a78c0b7d
+      - INFOBIP_EMAIL_BASE_URL=https://qd55k2.api.infobip.com/email/2/send
+      - INFOBIP_EMAIL_FROM=info@asmglobal.cloud
+
+    depends_on:
+      - spiritlynk-db
+
+    restart: always
+
+    networks:
+      - asmglobal-network
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spiritlynk.rule=Host(`spiritlynk.asmglobal.cloud`)"
+      - "traefik.http.routers.spiritlynk.entrypoints=websecure"
+      - "traefik.http.routers.spiritlynk.tls.certresolver=letsencrypt"
+      - "traefik.http.services.spiritlynk.loadbalancer.server.port=3050"
+
+  # ======================================================
+  # SPIRITLYNK POSTGRES DATABASE
+  # ======================================================
+  spiritlynk-db:
+    image: postgres:16
+    container_name: spiritlynk-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: spiritlynk
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecret
+    volumes:
+      - spiritlynk-data:/var/lib/postgresql/data
+    networks:
+      - asmglobal-network
+
+# ======================================================
+# VOLUMES
+# ======================================================
+volumes:
+  spiritlynk-data:
+
+# ======================================================
+# NETWORKS
+# ======================================================
 networks:
   asmglobal-network:
     external: true

@@ -10,15 +10,11 @@ import Register from "./pages/Register";
 
 /* Dashboard Pages */
 import Dashboard from "./pages/Dashboard";
-
-// UPDATED: Members now points to the main page (not old folder)
 import Members from "./pages/Members";
-
-// Sub-pages remain in members folder (we’ll refactor later)
 import Upload from "./pages/members/Upload";
 import MemberProfile from "./pages/members/MemberProfile";
 import MemberForm from "./pages/members/MemberForm";
-
+import EditMember from "./pages/members/EditMember";
 import Media from "./pages/Media";
 import Podcast from "./pages/Podcast";
 import SocialHub from "./pages/SocialHub";
@@ -51,23 +47,23 @@ export default function App() {
           {/* MAIN DASHBOARD LANDING PAGE */}
           <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* MODULES */}
+          {/* MEMBERS MODULE */}
           <Route path="/dashboard/members" element={<Members />} />
           <Route path="/dashboard/members/upload" element={<Upload />} />
           <Route path="/dashboard/members/new" element={<MemberForm />} />
           <Route path="/dashboard/members/:id" element={<MemberProfile />} />
+          <Route path="/dashboard/members/:id/edit" element={<EditMember />} />
 
+          {/* OTHER MODULES */}
           <Route path="/dashboard/media" element={<Media />} />
           <Route path="/dashboard/podcast" element={<Podcast />} />
           <Route path="/dashboard/social" element={<SocialHub />} />
           <Route path="/dashboard/sms" element={<SMS />} />
           <Route path="/dashboard/settings" element={<Settings />} />
-
         </Route>
 
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/login" replace />} />
-
       </Routes>
     </BrowserRouter>
   );

@@ -20,11 +20,11 @@ function signToken(user) {
 }
 
 // ----------------------------------------------------
-// REGISTER USER
+// REGISTER USER (ROLE CANNOT BE ASSIGNED BY USER)
 // ----------------------------------------------------
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: "Name, email and password required" });
@@ -37,12 +37,13 @@ exports.register = async (req, res) => {
 
     const hashed = await bcrypt.hash(password, 10);
 
+    // 🔥 FORCE NEW USERS TO MEMBER ONLY
     const user = await User.create({
       name,
       email,
       password: hashed,
-      role: role || "member",
-      isVerified: true  // TEMP: auto-verify
+      role: "member",  // <-- ENFORCED
+      isVerified: true
     });
 
     // SEND WELCOME EMAIL (temporary until verification is implemented)
@@ -54,7 +55,7 @@ exports.register = async (req, res) => {
 
     return res.json({
       message: "User registered",
-      user: { id: user.id, email: user.email }
+      user: { id: user.id, email: user.email, role: user.role }
     });
 
   } catch (err) {
@@ -84,7 +85,7 @@ exports.login = async (req, res) => {
 
     const token = signToken(user);
 
-    return res.json({ message: "Login successful", token });
+    return res.json({ message: "Login successful", token, role: user.role });
 
   } catch (err) {
     console.error("Login Error:", err);

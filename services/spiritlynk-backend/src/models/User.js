@@ -30,27 +30,28 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
 
-  // ✅ MATCH CONTROLLER FIELD NAME
   isVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
 
+  // 🔥 UPDATED ROLE LIST
   role: {
-    type: DataTypes.ENUM("admin", "pastor", "member"),
-    defaultValue: "member",
+    type: DataTypes.ENUM("superadmin", "admin", "pastor", "member", "visitor"),
+    defaultValue: "visitor",
   },
 
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
   },
+
 }, {
   tableName: "users",
   timestamps: true,
 });
 
-// RELATION
+// RELATIONSHIP
 const EmailVerificationToken = require("./EmailVerificationToken");
 User.hasOne(EmailVerificationToken, { foreignKey: "userId", onDelete: "CASCADE" });
 

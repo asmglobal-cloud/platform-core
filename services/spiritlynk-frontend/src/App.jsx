@@ -3,8 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 /* Layouts */
 import DashboardLayout from "./layouts/DashboardLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import PublicLayout from "./layouts/PublicLayout";
 
 /* Public Pages */
+import Home from "./website/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -29,14 +31,22 @@ export default function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* PUBLIC ROUTES */}
+        {/* 🌍 PUBLIC WEBSITE ROUTES */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<h1>About (Coming Soon)</h1>} />
+          <Route path="/contact" element={<h1>Contact (Coming Soon)</h1>} />
+          <Route path="/pricing" element={<h1>Pricing (Coming Soon)</h1>} />
+          <Route path="/features" element={<h1>Features (Coming Soon)</h1>} />
+        </Route>
+
+        {/* 🔐 AUTHENTICATION ROUTES */}
         <Route element={<AuthLayout />}>
-          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* PROTECTED DASHBOARD ROUTES */}
+        {/* 🔒 PROTECTED DASHBOARD ROUTES */}
         <Route
           element={
             <ProtectedRoute>
@@ -44,7 +54,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          {/* MAIN DASHBOARD LANDING PAGE */}
+          {/* MAIN DASHBOARD */}
           <Route path="/dashboard" element={<Dashboard />} />
 
           {/* MEMBERS MODULE */}
@@ -62,8 +72,9 @@ export default function App() {
           <Route path="/dashboard/settings" element={<Settings />} />
         </Route>
 
-        {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* 🔁 DEFAULT REDIRECT */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </BrowserRouter>
   );

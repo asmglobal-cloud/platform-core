@@ -75,6 +75,7 @@ services:
       - INFOBIP_EMAIL_API_KEY=ae7bf6fa830d90cf0d76817f05bbf044-0d8ea0ce-2595-48e6-83fd-02b5a78c0b7d
       - INFOBIP_EMAIL_BASE_URL=https://qd55k2.api.infobip.com/email/2/send
       - INFOBIP_EMAIL_FROM=info@asmglobal.cloud
+      - JWT_SECRET=spiritlynk_super_key_2025
 
     depends_on:
       - spiritlynk-db

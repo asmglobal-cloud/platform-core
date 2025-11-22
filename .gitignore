@@ -1,0 +1,22 @@
+# Node
+node_modules/
+dist/
+*.log
+
+# Environment
+.env
+.env.local
+.env.production
+
+# System files
+.DS_Store
+
+# Backups
+*.bak
+*.save
+
+# Docker
+*.pid
+
+# Build output
+**/dist/
